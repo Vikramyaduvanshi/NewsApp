@@ -1,0 +1,95 @@
+let express= require("express");
+const { News, Trade } = require("../modal/modal");
+let newsrouter= express.Router()
+
+
+newsrouter.post("/post_news", async (req,res)=>{
+try{
+    let {title, description }= req.body;
+console.log(req.body)
+let news1= await new News(
+    {
+        ...req.body
+    }
+)
+
+await news1.save()
+
+res.json({succees:true, message:"news created successfully"})
+}catch(e){
+res.json({success:false, message:e.message})
+}
+})
+
+newsrouter.post("/post_trade", async (req,res)=>{
+try{
+    let {title, description }= req.body;
+
+let News=new Trade(
+    {
+        ...req.body
+    }
+)
+
+await News.save()
+
+res.json({succees:true, message:"news created successfully"})
+}catch(e){
+res.json({success:false, message:e.message})
+}
+})
+
+newsrouter.get("/get_news", async (req,res)=>{
+try{
+   let {searchword, page=1, limit=10}= req.query
+console.log(searchword)
+   let searchobj={};
+   if(searchword && searchword.trim() !== ""){
+    searchobj.title= {$regex:searchword, $options:"i"}
+   }
+
+let skip= (Number(page)-1)*Number(limit)
+
+let news= await News.aggregate([{$match:searchobj},{ $sort: { createdAt: -1 } }, {$skip:skip}, {$limit:Number(limit)}])
+
+res.json({success:true, message:"data get successfully",news})
+
+}catch(e){
+res.json({success:false, message:e.message})
+}
+
+})
+
+newsrouter.get("/get_news/:id", async (req,res)=>{
+try{
+    let id= req.params.id
+   let res1= await News.findById(id)
+
+res.json({success:true, message:"data get successfully",singlenews:res1})
+
+}catch(e){
+res.json({success:false, message:e.message})
+}
+
+})
+
+
+
+newsrouter.get("/get_trade", async (req,res)=>{
+try{
+   let {searchword, page=1, limit=10}=req.query
+let searchobj= {}
+if(searchword && (searchword.trim() !=="" || searchword.trim() !==" ") ){
+    searchobj.title={$regex:searchword, $option:"i"};
+}
+let skip= (Number(page)-1)*Number(limit);
+
+let news=await Trade.aggregate([{$match:searchobj} ,{$sort:{createdAt:-1}}, {$skip:skip}, {$limit: Number(limit)}]);
+
+res.json({success:true, message:"news fetched successfully",trades:news});
+}catch(e){
+res.json({message:e.message, success:false})
+}
+})
+
+module.exports = newsrouter
