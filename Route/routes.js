@@ -92,4 +92,84 @@ res.json({message:e.message, success:false})
 }
 })
 
+
+
+newsrouter.delete("/delete_news/:id", async (req,res)=>{
+
+try{
+
+let id = req.params.id
+
+let result = await News.findByIdAndDelete(id)
+
+res.json({message:"News deleted successfully"})
+
+}catch(err){
+res.status(500).json({error:err.message})
+}
+
+})
+
+
+
+newsrouter.delete("/delete_trade/:id", async (req,res)=>{
+
+try{
+
+let id = req.params.id
+
+let result = await Trade.findByIdAndDelete(id)
+
+res.json({message:"Trade deleted successfully"})
+
+}catch(err){
+res.status(500).json({error:err.message})
+}
+
+})
+
+
+
+newsrouter.put("/update_trade/:id", async (req,res)=>{
+
+try{
+
+let id = req.params.id
+
+let result = await Trade.findByIdAndUpdate(
+id,
+req.body,
+{new:true}
+)
+
+res.json({message:"Trade updated successfully",data:result})
+
+}catch(err){
+res.status(500).json({error:err.message})
+}
+
+})
+
+
+
+newsrouter.put("/update_news/:id", async (req,res)=>{
+
+try{
+
+let id = req.params.id
+
+let result = await News.findByIdAndUpdate(
+id,
+req.body,
+{new:true}
+)
+
+res.json({message:"News updated successfully",data:result})
+
+}catch(err){
+res.status(500).json({error:err.message})
+}
+
+})
+
 module.exports = newsrouter
