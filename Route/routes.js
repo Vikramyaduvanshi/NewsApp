@@ -5,11 +5,12 @@ let newsrouter= express.Router()
 
 newsrouter.post("/post_news", async (req,res)=>{
 try{
-    let {title, description }= req.body;
+    let {title, description,image}= req.body;
 console.log(req.body)
-let news1= await new News(
+let news1=  new News(
     {
-        ...req.body
+        ...req.body,
+        image_url:image
     }
 )
 
@@ -23,11 +24,12 @@ res.json({success:false, message:e.message})
 
 newsrouter.post("/post_trade", async (req,res)=>{
 try{
-    let {title, description }= req.body;
+    let {title, description,image }= req.body;
 
 let News=new Trade(
     {
-        ...req.body
+        ...req.body,
+        image_url:image
     }
 )
 

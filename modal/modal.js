@@ -14,7 +14,7 @@ image_url:{type:String, default:"https://greenup24.com/assets/img/blog/a-complet
 let tradeSchema= new mongoose.Schema({
 title:{type:String, required:true},
 description:{type:String, required:true},
-imge_url:{type:String, default:""}
+image_url:{type:String, default:""}
 },
 {
     timestamps:true
