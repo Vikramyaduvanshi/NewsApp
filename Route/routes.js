@@ -1,6 +1,7 @@
 let express= require("express");
-const { News, Trade } = require("../modal/modal");
 let newsrouter= express.Router()
+const { News, Trade } = require("../modal/modal");
+
 
 
 newsrouter.post("/post_news", async (req,res)=>{
@@ -174,4 +175,4 @@ res.status(500).json({error:err.message})
 
 })
 
-module.exports = newsrouter
+module.exports=newsrouter
