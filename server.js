@@ -320,7 +320,7 @@ let storedNews = [];
 // ===============================
 // ⏱️ CRON JOB
 // ===============================
-cron.schedule("*/50 * * * *", async () => {
+cron.schedule("*/20 * * * *", async () => {
   console.log("Running cron at:", new Date().toLocaleTimeString());
 
   const assets = new Set();
