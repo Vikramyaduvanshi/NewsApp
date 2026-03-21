@@ -366,7 +366,7 @@ cron.schedule("*/20 * * * *", async () => {
     }
   }
 
-  console.log("DB Updated", uniqueNews.length);
+  // console.log("DB Updated", uniqueNews.length);
 });
 
 
@@ -374,7 +374,7 @@ cron.schedule("*/20 * * * *", async () => {
 
 
 
-App.listen(PORT, ()=>{
-    ConnectDb()
-    console.log("server running is at port 5000");
-})
+App.listen(PORT, "0.0.0.0", () => {
+    ConnectDb();
+    console.log(`Server running on port ${PORT}`);
+});
