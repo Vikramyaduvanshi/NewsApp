@@ -1,0 +1,300 @@
+{
+  "version": "5.0.0",
+  "description": "Ultra Institutional Yahoo Finance → NSE Sector + Index Intelligence Engine (India Market Full Coverage)",
+
+  "rules": {
+    "matching_strategy": "semantic_priority + alias_fuzzy + embedding_similarity + fallback_hierarchy",
+    "confidence_threshold": 0.78,
+    "global_fallback": "NIFTY 500",
+    "secondary_fallback": "NIFTY TOTAL MARKET"
+  },
+
+  "market_structure": {
+    "total_nse_indices_covered": "120+",
+    "core_sectors": 11,
+    "thematic_indices": 40,
+    "broad_market_indices": 5
+  },
+
+  "engine": {
+
+    "FINANCIAL_SYSTEM": {
+      "NIFTY BANK": {
+        "priority": 1,
+        "aliases": ["banks - private","banks - public","banks - regional","commercial banking","retail banking","corporate banking","bank lending","core banking","scheduled banks"]
+      },
+
+      "NIFTY FINANCIAL SERVICES": {
+        "priority": 2,
+        "aliases": [
+          "financial services",
+          "credit services",
+          "nbfc",
+          "asset management",
+          "mutual funds",
+          "insurance",
+          "capital markets",
+          "stock exchanges",
+          "investment banking",
+          "wealth management",
+          "mortgage finance",
+          "fintech",
+          "payment processing"
+        ]
+      },
+
+      "NIFTY PSU BANK": {
+        "priority": 3,
+        "aliases": [
+          "public sector banks",
+          "government banks",
+          "psu banking"
+        ]
+      }
+    },
+
+    "TECHNOLOGY_SYSTEM": {
+      "NIFTY IT": {
+        "priority": 1,
+        "aliases": [
+          "information technology services",
+          "software",
+          "software - application",
+          "software - infrastructure",
+          "saas",
+          "cloud computing",
+          "cybersecurity",
+          "it consulting",
+          "digital transformation",
+          "outsourcing"
+        ]
+      },
+
+      "NIFTY TELECOM": {
+        "priority": 2,
+        "aliases": [
+          "telecom services",
+          "communication services",
+          "wireless",
+          "broadband",
+          "internet providers"
+        ]
+      }
+    },
+
+    "ENERGY_SYSTEM": {
+      "NIFTY ENERGY": {
+        "priority": 1,
+        "aliases": [
+          "utilities",
+          "power generation",
+          "electric utilities",
+          "renewable energy",
+          "solar",
+          "wind energy",
+          "hydro power",
+          "thermal power"
+        ]
+      },
+
+      "NIFTY OIL & GAS": {
+        "priority": 1,
+        "aliases": [
+          "oil & gas",
+          "refining",
+          "petroleum",
+          "natural gas",
+          "lng",
+          "exploration",
+          "upstream",
+          "downstream",
+          "pipelines",
+          "oilfield services"
+        ]
+      }
+    },
+
+    "INDUSTRIAL_SYSTEM": {
+      "NIFTY INDIA MANUFACTURING": {
+        "priority": 1,
+        "aliases": [
+          "industrial machinery",
+          "heavy engineering",
+          "automation",
+          "electrical equipment",
+          "factory equipment",
+          "defence manufacturing",
+          "aerospace",
+          "railway equipment",
+          "machine tools"
+        ]
+      },
+
+      "NIFTY INFRA": {
+        "priority": 2,
+        "aliases": [
+          "engineering & construction",
+          "infrastructure",
+          "construction services",
+          "roads",
+          "highways",
+          "cement",
+          "building materials",
+          "real infrastructure projects",
+          "ports",
+          "airports"
+        ]
+      },
+
+      "NIFTY INDIA DEFENCE": {
+        "priority": 3,
+        "aliases": [
+          "defense",
+          "aerospace & defense",
+          "military equipment",
+          "ammunition",
+          "naval systems"
+        ]
+      }
+    },
+
+    "CONSUMER_SYSTEM": {
+      "NIFTY FMCG": {
+        "priority": 1,
+        "aliases": [
+          "consumer defensive",
+          "packaged foods",
+          "beverages",
+          "tobacco",
+          "personal care",
+          "household products",
+          "daily essentials",
+          "confectionery"
+        ]
+      },
+
+      "NIFTY CONSUMPTION": {
+        "priority": 2,
+        "aliases": [
+          "retail",
+          "ecommerce",
+          "restaurants",
+          "hospitality",
+          "travel",
+          "tourism",
+          "apparel",
+          "luxury goods",
+          "leisure services"
+        ]
+      }
+    },
+
+    "HEALTHCARE_SYSTEM": {
+      "NIFTY PHARMA": {
+        "priority": 1,
+        "aliases": [
+          "pharmaceuticals",
+          "drug manufacturing",
+          "biotech",
+          "life sciences",
+          "generic drugs",
+          "api manufacturing"
+        ]
+      },
+
+      "NIFTY HEALTHCARE": {
+        "priority": 2,
+        "aliases": [
+          "hospitals",
+          "medical services",
+          "diagnostics",
+          "medical equipment",
+          "healthcare services"
+        ]
+      }
+    },
+
+    "MATERIALS_SYSTEM": {
+      "NIFTY METAL": {
+        "priority": 1,
+        "aliases": [
+          "steel",
+          "aluminum",
+          "copper",
+          "mining",
+          "iron ore",
+          "ferrous metals",
+          "non ferrous metals",
+          "base metals"
+        ]
+      },
+
+      "NIFTY COMMODITIES": {
+        "priority": 2,
+        "aliases": [
+          "chemicals",
+          "fertilizers",
+          "agrochemicals",
+          "paper",
+          "pulp",
+          "industrial chemicals"
+        ]
+      }
+    },
+
+    "REAL_ESTATE_SYSTEM": {
+      "NIFTY REALTY": {
+        "priority": 1,
+        
+        "aliases": [
+          "real estate",
+          "property development",
+          "housing",
+          "reit",
+          "land development",
+          "construction real estate"
+        ]
+      }
+    },
+
+    "THEMATIC_LAYER": {
+      "NIFTY PVT BANK": {
+        "priority": 1,
+        "aliases": ["private banks"]
+      },
+
+      "NIFTY AUTO": {
+        "priority": 1,
+        "aliases": [
+          "automobile",
+          "auto manufacturers",
+          "auto components",
+          "ev vehicles",
+          "electric vehicles",
+          "two wheelers",
+          "commercial vehicles"
+        ]
+      },
+
+      "NIFTY CONSUMER DURABLES": {
+        "priority": 1,
+        "aliases": [
+          "electronics",
+          "home appliances",
+          "consumer electronics",
+          "durable goods"
+        ]
+      },
+
+      "NIFTY MEDIA": {
+        "priority": 1,
+        "aliases": [
+          "entertainment",
+          "broadcasting",
+          "media houses",
+          "digital media"
+        ]
+      }
+    }
+  }
+}

@@ -4,12 +4,12 @@ const getPrice = async (symbol) => {
   console.log(symbol, "symbol in getprice");
 
   try {
-    // 🔥 Primary: Twelve Data
+
     const res = await axios.get(
       "https://api.twelvedata.com/price",
       {
         params: {
-          symbol: symbol, // e.g. EUR/USD
+          symbol: symbol, 
           apikey: process.env.TWELVE_API_KEY,
         },
       }

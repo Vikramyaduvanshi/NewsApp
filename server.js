@@ -1,22 +1,57 @@
 let dotenv= require("dotenv")
+const http = require("http")
+let cookieParser= require("cookie-parser")
 dotenv.config()
 let express= require("express");
+let {Server}=require("socket.io")
+let cors=require("cors")
 const newsrouter = require("./Route/routes");
 let App= express();
-
+const server = http.createServer(App)
 App.use(express.json());
 
 let PORT= process.env.PORT || 8000
-let cors=require("cors");
+App.use(cors({
+
+    origin: "http://localhost:5173", 
+
+    credentials: true
+
+}))
+
+// COOKIE PARSER
+App.use(cookieParser())
+
 const ConnectDb = require("./config");
-App.use(cors())
+// App.use(cors())
 const axios = require("axios");
 const cron = require("node-cron");
 const { News } = require("./modal/modal");
-const generateSummary = require("./Route/generate_summary");
+// const generateSummary = require("./Route/generate_summary");
 const detectAssets = require("./Route/assest");
-const getPrice = require("./Route/assetsPrice");
-// const { generateSummary } = require("./Route/generate_summary");
+// const getPrice = require("./Route/assetsPrice");
+const runDomesticPipeline = require("./Indian_Market/DomesticPipeLine");
+const Indiarouter = require("./Indian_Market/Routes/first");
+const Userrouter = require("./Userroutes/AuthRoutes");
+const errorMiddleware = require("./middleware/errorMiddleware");
+const setupSocket = require("./socket/socket");
+const fULL_forex_analyse = require("./forex_market/Full_forex_analyse");
+const CalenderHandleWithUpsert = require("./forex_market/Forex_Calender");
+const convertToCron = require("./forex_market/convertToCron");
+const { fetchAllNews } = require("./forex_market/forex_fetch");
+const Forexrouter = require("./forex_market/routes");
+// const { generateSummary } = require("./  Route/generate_summary");
+
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:5173", 
+    methods: ["GET", "POST"],
+    credentials: true // Yeh allow karta hai cookies ko cross-origin bhejna
+  }
+});
+// setup socket
+// setupSocket(io)
+setupSocket(io)
 
 App.get("/test", (req, res)=>{
 
@@ -26,9 +61,9 @@ res.json({success:true, message:"testing routing is running successfully"});
 
 
 App.use("/news", newsrouter);
-
-
-
+App.use("/India", Indiarouter)
+App.use("/user",Userrouter)
+App.use("/forex", Forexrouter)
 
 
 const categories = ["forex", "general", "crypto"];
@@ -190,9 +225,9 @@ CORPORATE: [
 ]
 };
 
-// ===============================
+
 // 🔴 IMPACT DETECT (ADVANCED)
-// ===============================
+
 const getImpact = (headline) => {
   const h = headline.toLowerCase();
   let score = 0;
@@ -208,9 +243,9 @@ const getImpact = (headline) => {
   return "LOW";
 };
 
-// ===============================
+
 // 🏷️ MULTI CATEGORY DETECT
-// ===============================
+
 const matchKeyword = (text, keyword) => {
   const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   return new RegExp(`\\b${escaped}\\b`, "i").test(text);
@@ -231,31 +266,11 @@ const detectCategories = (headline) => {
   return matched.length ? matched : ["GENERAL"];
 };
 
-// ===============================
-// 📡 FETCH NEWS
-// ===============================
-const fetchAllNews = async () => {
-  try {
-    const res = await axios.get("https://gnews.io/api/v4/search", {
-      params: {
-        q: "forex OR USD OR EUR OR inflation OR interest rate OR oil OR gold",
-        lang: "en",
-        max: 5,
-        token: process.env.GNEWS_API_KEY,
-      },
-    });
-
-    return res.data.articles;
-  } catch (err) {
-    console.log("❌ GNews Error:", err.message);
-    return [];
-  }
-};
 
 // ===============================
 // 🧹 FORMAT NEWS
 // ===============================
-const formatNews = async (newsArray, priceData) => {
+const formatNews = async (newsArray) => {
   return await Promise.all(
     newsArray.map(async (n) => {
       
@@ -266,29 +281,29 @@ const formatNews = async (newsArray, priceData) => {
       const impact = getImpact(title);
 
       // ✅ await fix
-      const existNews = await News.findOne({ url: n.url });
+      // const existNews = await News.findOne({ url: n.url });
 
-      let ai_summary = existNews?.ai_summary || "";
+      // let ai_summary = existNews?.ai_summary || "";
 
       // 🔥 Detect only relevant assets
-      const assets = detectAssets(title + " " + description);
+      // const assets = detectAssets(title + " " + description);
 
-      let newsPrices = {};
-      assets.forEach(a => {
-        if (priceData[a]) {
-          newsPrices[a] = priceData[a];
-        }
-      });
+      // let newsPrices = {};
+      // assets.forEach(a => {
+      //   if (priceData[a]) {
+      //     newsPrices[a] = priceData[a];
+      //   }
+      // });
 
       // 🔥 Generate AI only if not exists
-      if (!existNews) {
-        ai_summary = await generateSummary(
-          title,
-          description,
-          content?.slice(0, 1000), // 🔥 limit content
-          newsPrices
-        );
-      }
+      // if (!existNews) {
+      //   ai_summary = await generateSummary(
+      //     title,
+      //     description,
+      //     content?.slice(0, 1000), // 🔥 limit content
+      //     newsPrices
+      //   );
+      // }
 
       return {
         title,
@@ -296,7 +311,7 @@ const formatNews = async (newsArray, priceData) => {
         url: n.url,
         image_url: n.image || "",
 
-        ai_summary,
+        ai_summary:"",
         impact,
 
         description,
@@ -304,7 +319,7 @@ const formatNews = async (newsArray, priceData) => {
 
         categories: detectCategories(title),
 
-        priceData: newsPrices, // 🔥 ADD THIS
+        // priceData: newsPrices, // 🔥 ADD THIS
 
         time: new Date(n.publishedAt || n.datetime || Date.now())
       };
@@ -330,19 +345,19 @@ cron.schedule("*/30 * * * *", async () => {
   // 🔥 STEP 1: Collect all unique assets
   for (let news of rawNews) {
     const detected = detectAssets(news.title + " " + news.description);
-
+// isko behtar bnao assests ko
     detected.forEach(a => assets.add(a)); // ✅ correct way
   }
 
   // 🔥 STEP 2: Fetch prices (once per asset)
-  const currentpriceassets = {};
+  // const currentpriceassets = {};
 
-  for (let asset of assets) {
-    currentpriceassets[asset] = await getPrice(asset);
-  }
-
+  // for (let asset of assets) {
+  //   currentpriceassets[asset] = await getPrice(asset);
+  // }
+  
   // 🔥 STEP 3: Format news (pass price data)
-  const formatted = await formatNews(rawNews, currentpriceassets);
+  const formatted = await formatNews(rawNews);
 
   const map = new Map();
 
@@ -370,11 +385,75 @@ cron.schedule("*/30 * * * *", async () => {
 });
 
 
+//crone for domestic
+cron.schedule("*/20 * * * *", async () => {
+  console.log("⏰ Cron running every 1 minute...");
+
+  try {
+    await runDomesticPipeline();
+  } catch (err) {
+    console.log("Cron Error:", err.message);
+  }
+});
+
+
+let eventJob = null;
+let next_shedule= {}
+function scheduleNextJob() {
+  if (!next_shedule.time) return;
+
+  // Purani cron band karega and next upcoming data ke bad run hoga 
+  if (eventJob) {
+    eventJob.stop();
+    eventJob.destroy?.();
+  }
+
+  eventJob = cron.schedule(next_shedule.time, async () => {
+    console.log("⏰ Dynamic Event Triggered");
+
+    let res = await CalenderHandleWithUpsert();
+
+    next_shedule.idx++;
+
+    if (res[next_shedule.idx]) {
+      next_shedule.time = convertToCron(
+        res[next_shedule.idx].time
+      );
+
+      console.log("Next Event:", next_shedule.time);
+
+      // next cron create
+      fULL_forex_analyse()
+      scheduleNextJob();
+    }
+  });
+}
+
+
+cron.schedule("0 0 * * *", async () => {
+  console.log("⏰ Daily Calendar Refresh");
+// isme mene daily caleneder set krna and new cron update ka logic likhna hai
+  let res = await CalenderHandleWithUpsert();
+
+  next_shedule.idx = 0;
+
+  if (res.length) {
+    next_shedule.time = convertToCron(res[0].time);
+
+    console.log("First Event:", next_shedule.time);
+
+    scheduleNextJob();
+  }
+});
+
+
+App.use(errorMiddleware)
 
 
 
 
-App.listen(PORT, "0.0.0.0", () => {
+
+server.listen(PORT, "0.0.0.0", () => {
     ConnectDb();
     console.log(`Server running on port ${PORT}`);
 });

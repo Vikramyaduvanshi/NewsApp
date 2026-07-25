@@ -12,4 +12,13 @@ console.log("server connected succesfully to db")
    }
 }
 
+
+
+
+
+
+
+
+
+
 module.exports=ConnectDb
