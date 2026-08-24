@@ -3,7 +3,7 @@ let OpenAI=require("openai")
 
 
 const client = new OpenAI({
-  apiKey: process.env.GROQ_API_KEY,
+  apiKey: process.env.groq_api_key1,
   baseURL: "https://api.groq.com/openai/v1",
 });
 

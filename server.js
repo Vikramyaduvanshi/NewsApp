@@ -40,6 +40,7 @@ const CalenderHandleWithUpsert = require("./forex_market/Forex_Calender");
 const convertToCron = require("./forex_market/convertToCron");
 const { fetchAllNews } = require("./forex_market/forex_fetch");
 const Forexrouter = require("./forex_market/routes");
+const IndiaResultrouter = require("./Indian_Market/Routes/Resultapi");
 // const { generateSummary } = require("./  Route/generate_summary");
 
 const io = new Server(server, {
@@ -64,6 +65,7 @@ App.use("/news", newsrouter);
 App.use("/India", Indiarouter)
 App.use("/user",Userrouter)
 App.use("/forex", Forexrouter)
+App.use("/india_result", IndiaResultrouter)
 
 
 const categories = ["forex", "general", "crypto"];
@@ -386,7 +388,7 @@ cron.schedule("*/30 * * * *", async () => {
 
 
 //crone for domestic
-cron.schedule("*/20 * * * *", async () => {
+cron.schedule("*/30 * * * *", async () => {
   console.log("⏰ Cron running every 1 minute...");
 
   try {
@@ -415,6 +417,10 @@ function scheduleNextJob() {
 
     next_shedule.idx++;
 
+    while(res[next_shedule.idx].time==""){
+      next_shedule.idx++;
+    }
+
     if (res[next_shedule.idx]) {
       next_shedule.time = convertToCron(
         res[next_shedule.idx].time
@@ -423,7 +429,7 @@ function scheduleNextJob() {
       console.log("Next Event:", next_shedule.time);
 
       // next cron create
-      fULL_forex_analyse()
+    
       scheduleNextJob();
     }
   });
@@ -431,20 +437,44 @@ function scheduleNextJob() {
 
 
 cron.schedule("0 0 * * *", async () => {
-  console.log("⏰ Daily Calendar Refresh");
+try{
+    console.log("⏰ Daily Calendar Refresh");
 // isme mene daily caleneder set krna and new cron update ka logic likhna hai
   let res = await CalenderHandleWithUpsert();
+let i=0
+while(res[i].time==""){
+i++
+}
 
-  next_shedule.idx = 0;
+
+  next_shedule.idx = i;
 
   if (res.length) {
-    next_shedule.time = convertToCron(res[0].time);
+    next_shedule.time = convertToCron(res[i].time);
 
     console.log("First Event:", next_shedule.time);
 
     scheduleNextJob();
   }
+}catch(e){
+console.log(e.message)
+
+}
 });
+
+
+cron.schedule("0 */2 * * *", async () => {
+  console.log("⏰ Cron running every 1 minute...");
+
+  try {
+    await fULL_forex_analyse();
+  } catch (err) {
+    console.log("Cron Error:", err.message);
+  }
+});
+
+
+
 
 
 App.use(errorMiddleware)

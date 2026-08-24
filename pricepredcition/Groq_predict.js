@@ -5,7 +5,7 @@ const { OpenAI } = require("openai");
 // GROQ CLIENT
 // ==========================================
 const client = new OpenAI({
-  apiKey: process.env.GROQ_API_KEY,
+  apiKey: process.env.groq_api_key2,
   baseURL: "https://api.groq.com/openai/v1",
 });
 
@@ -57,7 +57,7 @@ function cleanJSON(text) {
 async function callAI(prompt, retry = 2) {
   try {
     const res = await client.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+      model: "openai/gpt-oss-120b",
 
       temperature: 0.1,
 

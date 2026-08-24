@@ -1,4 +1,5 @@
 const predictorresult = require("../pricepredcition/Mainpredictor")
+const companyAgent = require("./Model_text")
 
 function chatSocket(io, socket) {
 
@@ -7,20 +8,14 @@ function chatSocket(io, socket) {
         console.log("send message ayi frontend se", data)
 
         console.log("socket id", socket.id)
-  
+  let model_text= await companyAgent(data.text)
 
 // yha pr vo data bhi send krna hai jisko analyse krke ye predictor bna hai
-        let res = await predictorresult(
-            data.text.trim()
-        )
+        let res = await predictorresult(model_text.trim())
 
         console.log("result in chatsocket", res)
 
-        let response = {
-            ...res,
-            time: new Date().toLocaleTimeString(),
-            sender: "ai"
-        }
+        let response = {...res,time: new Date().toLocaleTimeString(),sender: "ai"}
 
         socket.emit("receive_message", response)
 

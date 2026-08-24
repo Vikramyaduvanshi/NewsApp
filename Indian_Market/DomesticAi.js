@@ -1,13 +1,13 @@
 let OpenAI = require("openai");
 
 const client = new OpenAI({
-  apiKey: process.env.GROQ_API_KEY,
+  apiKey: process.env.groq_api_key3,
   baseURL: "https://api.groq.com/openai/v1",
 });
 
 const generateDomesticSummary = async (companyName, rawText) => {
   const stream = await client.chat.completions.create({
-    model: "llama-3.3-70b-versatile",
+    model: "openai/gpt-oss-120b",
     messages: [
       {
         role: "user",

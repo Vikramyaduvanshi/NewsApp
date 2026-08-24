@@ -1,14 +1,14 @@
 const OpenAI = require("openai");
 
 const client = new OpenAI({
-  apiKey: process.env.GROQ_API_KEY,
+  apiKey: process.env.groq_api_key1,
   baseURL: "https://api.groq.com/openai/v1",
 });
 
 const forexMarketAnalysis = async (prompt) => {
   try {
     const completion = await client.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+      model: "openai/gpt-oss-120b",
 
       temperature: 0.2,
 

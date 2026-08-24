@@ -3,15 +3,16 @@ const { verifySecureToken, generateSecureToken } = require("../Token/generateTok
 
 function Authmiddleware(){
     return async (req,res,next)=>{
-        let access_token= req.cookies?.accesstoken
-        let refresh_token= req.cookies?.refreshtoken
+        let access_token = req.cookies?.accesstoken
+        let refresh_token = req.cookies?.refreshtoken
         let payload;
+
 if(access_token){
 try{
-payload= verifySecureToken(access_token)
+payload = verifySecureToken(access_token)
 }
 catch(e){
-if(e.message=="jwt expired"){
+if(e.message == "jwt expired"){
     console.log("access token has expired")
 }else{
     return res.json({message:"invalid access token", success:false})
@@ -46,6 +47,8 @@ let checksub= await Usermodel.findById(payload._id)
 if(checksub.subscription){
     req.userId= payload._id
     next()
+}else{
+return res.json({message:"subscription has expired"}) 
 }
 
     }

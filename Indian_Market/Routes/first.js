@@ -1,5 +1,6 @@
 let express= require("express")
-const { DomesticNews } = require("../../modal/modal")
+const { DomesticNews } = require("../../modal/modal");
+const { UpcomingIpo, GetListedIPOs, GetOngoingIPOs } = require("../IPO");
 let Indiarouter= express.Router()
 
 
@@ -43,5 +44,52 @@ Indiarouter.get("/india_news", async (req, res) => {
     res.json({ success: false, message: e.message });
   }
 });
+
+
+
+
+Indiarouter.get("/upcoming_ipo" , async (req,res)=>{
+
+try{
+    let {page=1,pageSize=10}=req.query
+
+  let data= await UpcomingIpo(page,pageSize)
+  return res.json({"message":"Upcoming IPO data fetched successfully", data})
+
+}catch(e){
+return res.json({"message":e.message})
+
+}
+})
+
+
+Indiarouter.get("/get_listed_ipo" , async (req,res)=>{
+try{
+    let {page=1,pageSize=10}=req.query
+
+  let data= await GetListedIPOs(page,pageSize)
+  return res.json({"message":"listed IPO data fetched successfully", data})
+
+}catch(e){
+return res.json({"message":e.message})
+
+}
+})
+
+
+Indiarouter.get("/get_ongoing_ipo" , async (req,res)=>{
+try{
+    let {page=1,pageSize=10}=req.query
+
+  let data= await GetOngoingIPOs(page,pageSize)
+  return res.json({"message":"ongoing IPO data fetched successfully", data})
+
+}catch(e){
+return res.json({"message":e.message})
+
+}
+})
+
+
 
 module.exports=Indiarouter

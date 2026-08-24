@@ -1,5 +1,6 @@
 const axios = require("axios");
-const pdfParse = require("pdf-parse");
+const { PDFParse } = require("pdf-parse");
+
 
 function extractImportantText(fullText) {
   const startMatch = fullText.match(/(sub:|subject)/i);
@@ -18,6 +19,7 @@ function extractImportantText(fullText) {
 
 
 async function ExtractTotext(url) {
+  console.log(url)
   try {
     console.log("extract function running");
 
@@ -31,10 +33,11 @@ async function ExtractTotext(url) {
       },
       timeout: 15000,
     });
-
+console.log("pdf",response.data)
     console.log("after axios");
 
-    const data = await pdfParse(response.data);
+ let parser=new PDFParse({data:response.data})
+     const data = await parser.getText(); 
 
     console.log("text extracted");
 console.log(data.text)
